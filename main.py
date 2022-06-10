@@ -1,6 +1,7 @@
 from selenium.webdriver import Chrome, ChromeOptions
 from selenium.webdriver.common.by import By
 from time import sleep
+import database
 
 options = ChromeOptions()
 options.add_argument('--window-size=1920,1080')
@@ -21,6 +22,7 @@ def extract_info(block):
 
     img = block.find_element(By.CLASS_NAME, 'list-img').find_element(By.TAG_NAME, 'img').get_attribute('src')
     print(name, link, img)
+    database.add_item(name, link, img)
 
 def main():
     driver.get('https://ek.ua/list/298/')
@@ -28,11 +30,15 @@ def main():
         blocks = get_blocks()
         for block in blocks:
             extract_info(block)
+        database.commit()
         try:
             next_page()
         except:
             driver.close()
             break
+
+
+
 
 if __name__ == '__main__':
     main()
